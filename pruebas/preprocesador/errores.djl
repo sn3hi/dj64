@@ -1,0 +1,9 @@
+// errores.djl - errores del preprocesador
+#include "no_existe.djl"
+#ifdef DEPURAR
+#define N 10
+#define DOBLE (N * 2)
+#define N 20
+int v[DOBLE];        // DOBLE se expandio cuando N valia 10
+int w[N];
+print("N no se reemplaza dentro de una cadena");

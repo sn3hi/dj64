@@ -1,0 +1,10 @@
+// matematicas.djl - biblioteca de DJL que se incluye con #include
+#define EPSILON  1e-12      // tolerancia para comparar reales
+#define MAX_ITER 50
+
+float abs_f(float x) {
+    if (x < 0.0) {
+        return -x;
+    }
+    return x;
+}

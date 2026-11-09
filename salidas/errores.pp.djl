@@ -1,0 +1,9 @@
+// errores.djl - errores del preprocesador
+
+
+
+
+
+int v[(10 * 2)];        // DOBLE se expandio cuando N valia 10
+int w[20];
+print("N no se reemplaza dentro de una cadena");

@@ -1,0 +1,5 @@
+// ciclo_a.djl incluye a ciclo_b.djl, que vuelve a incluir a ciclo_a.djl
+// ciclo_b.djl
+
+int b;
+int a;

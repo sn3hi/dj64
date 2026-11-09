@@ -1,0 +1,3 @@
+// ciclo_a.djl incluye a ciclo_b.djl, que vuelve a incluir a ciclo_a.djl
+#include "ciclo_b.djl"
+int a;

@@ -1,0 +1,6 @@
+Constante de Brun (suma de inversos de primos gemelos)
+N                       = 10000
+pares de gemelos <= N   = 205
+suma parcial B(N)       = 1.616893557432
+ln(N)                   = 9.210340371976
+B(N) + 4 C2 / ln(N)     = 1.903598191218

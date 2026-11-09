@@ -1,0 +1,45 @@
+// estudiantes.djl - Tipo abstracto de datos (struct), arreglo de registros,
+// lectura de datos y ordenamiento por burbuja segun la nota.
+
+const float APROBAR = 3.0;
+
+struct Estudiante {
+    char inicial;
+    int codigo;
+    float nota;
+};
+
+struct Estudiante grupo[4];
+
+void ordenar() {
+    int i = 0;
+    bool cambio = true;
+    struct Estudiante tmp;
+    while (cambio) {
+        cambio = false;
+        for (i = 0; i < 4 - 1; i = i + 1) {
+            if (grupo[i].nota < grupo[i + 1].nota) {
+                tmp = grupo[i];
+                grupo[i] = grupo[i + 1];
+                grupo[i + 1] = tmp;
+                cambio = true;
+            }
+        }
+    }
+}
+
+int main() {
+    int i;
+    for (i = 0; i < 4; i = i + 1) {
+        read(grupo[i].inicial, grupo[i].codigo, grupo[i].nota);
+    }
+    ordenar();
+    for (i = 0; i < 4; i = i + 1) {
+        if (grupo[i].nota >= APROBAR || !(grupo[i].codigo % 2 != 0)) {
+            print(grupo[i].inicial, " aprobo\t", grupo[i].nota, '\n');
+        } else {
+            continue;
+        }
+    }
+    return 0;
+}

@@ -1,0 +1,16 @@
+// errores.djl - Programa con errores lexicos (uno por linea)
+int main() {
+    int 2valor = 10;
+    float r = 3.;
+    float e = 1.5e;
+    char c = 'ab';
+    print("tab\q");
+    print("sin cerrar);
+    if (a & b) { x = y | z; }
+    int este_identificador_es_demasiado_largo = 1;
+    int grande = 99999999999999999999;
+    float p = 2 @ 3;
+    #define TARDE 1
+    return 0;
+}
+/* comentario que nunca se cierra

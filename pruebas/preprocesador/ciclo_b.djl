@@ -1,0 +1,3 @@
+// ciclo_b.djl
+#include "ciclo_a.djl"
+int b;

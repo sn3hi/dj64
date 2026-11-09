@@ -1,0 +1,262 @@
+== Compilando los modulos con flex y gcc
+   preprocesador.l -> ./preprocesador
+   ensamblador.l -> ./ensamblador
+   enlazador.l -> ./enlazador
+   lexico.l -> ./lexico
+
+########## 1a. Preprocesador: heron.djl (#include de matematicas.djl y #define)
+preprocesador: 1 archivo(s) incluido(s), 2 macro(s) definida(s), 2 reemplazo(s), 0 error(es)
+---------- OK
+// heron.djl - Raiz cuadrada por el metodo de Heron (Tarea 11), escrita en DJL
+// matematicas.djl - biblioteca de DJL que se incluye con #include
+
+
+
+float abs_f(float x) {
+    if (x < 0.0) {
+        return -x;
+    }
+    return x;
+}
+
+
+########## 1b. Preprocesador: inclusion circular (ciclo_a.djl -> ciclo_b.djl -> ciclo_a.djl)
+pruebas/preprocesador/ciclo_b.djl:2: error: inclusion circular de "ciclo_a.djl"
+preprocesador: 1 archivo(s) incluido(s), 0 macro(s) definida(s), 0 reemplazo(s), 1 error(es)
+---------- OK (se detecto el error, codigo de salida 1)
+
+########## 1c. Preprocesador: archivo inexistente, directiva desconocida y redefinicion
+pruebas/preprocesador/errores.djl:2: error: no se encuentra el archivo "no_existe.djl"
+pruebas/preprocesador/errores.djl:3: error: directiva desconocida o mal escrita: #ifdef DEPURAR
+pruebas/preprocesador/errores.djl:6: aviso: la macro N se redefine con otro valor
+preprocesador: 0 archivo(s) incluido(s), 2 macro(s) definida(s), 2 reemplazo(s), 2 error(es)
+---------- OK (se detecto el error, codigo de salida 1)
+// errores.djl - errores del preprocesador
+
+
+
+
+
+int v[(10 * 2)];        // DOBLE se expandio cuando N valia 10
+int w[20];
+print("N no se reemplaza dentro de una cadena");
+
+########## 2a. Ensamblador: programas de las Tareas 10 y 17
+fibonacci: 14 palabras de codigo, 2 de datos, 4 reubicables, 0 exportados, 0 referencias externas
+busqueda: 26 palabras de codigo, 13 de datos, 9 reubicables, 0 exportados, 0 referencias externas
+factorial: 15 palabras de codigo, 2 de datos, 5 reubicables, 0 exportados, 0 referencias externas
+perifericos: 23 palabras de codigo, 0 de datos, 0 reubicables, 0 exportados, 0 referencias externas
+raiz: 657 palabras de codigo, 233 de datos, 296 reubicables, 13 exportados, 0 referencias externas
+brun: 739 palabras de codigo, 265 de datos, 321 reubicables, 13 exportados, 0 referencias externas
+fpu: 561 palabras de codigo, 60 de datos, 242 reubicables, 13 exportados, 0 referencias externas
+raiz_mod: 96 palabras de codigo, 173 de datos, 29 reubicables, 0 exportados, 25 referencias externas
+brun_mod: 178 palabras de codigo, 205 de datos, 40 reubicables, 0 exportados, 39 referencias externas
+
+########## 2b. Ensamblador: comparacion con el ensamblador de la Tarea 10 (Python)
+  fibonacci      16 palabras,   4 registros M: IGUAL al ensamblador de la Tarea 10
+  busqueda       39 palabras,   9 registros M: IGUAL al ensamblador de la Tarea 10
+  factorial      17 palabras,   5 registros M: IGUAL al ensamblador de la Tarea 10
+  perifericos    23 palabras,   0 registros M: IGUAL al ensamblador de la Tarea 10
+  raiz          890 palabras, 296 registros M: IGUAL al ensamblador de la Tarea 10
+  brun         1004 palabras, 321 registros M: IGUAL al ensamblador de la Tarea 10
+  fpu           621 palabras, 242 registros M: IGUAL al ensamblador de la Tarea 10
+---------- OK
+
+########## 2c. Ensamblador: programa con errores (pruebas/asm/errores.asm)
+linea 6: error: instruccion desconocida 'Multiplicar'
+linea 10: error: el simbolo 'inicio' ya esta definido
+linea 11: error: 'fpu_sumar' se declara .externo y tambien se define en este modulo
+linea 12: error: caracter no valido '$'
+linea 14: error: .incluir ya no existe: use #include "archivo" con el preprocesador
+linea 13: error: .global 'no_definido': el simbolo no esta definido en este modulo
+linea 4: error: 'R8' no es un registro valido (R0-R7)
+linea 5: error: Sumar espera 2 operando(s)
+linea 7: error: simbolo no definido 'fin_no_existe'
+linea 8: error: un inmediato debe ser un numero o una constante .equ (para la direccion de 'n' use Lea)
+linea 9: error: 'R1' no es una direccion
+11 error(es): no se genero el modulo objeto
+---------- OK (se detecto el error, codigo de salida 1)
+
+########## 3a. Enlazador-cargador: raiz_mod.obj + fpu.obj, LAD = 1000
+Enlazador: 2 modulo(s), 890 palabras
+  MODULO         BASE       TAMANO   ARCHIVO
+  raiz_mod       00000000   269      salidas/raiz_mod.obj
+  fpu            0000010D   621      salidas/fpu.obj
+  13 simbolos globales, 296 palabras para reubicar al cargar
+  modulo enlazado en salidas/raiz_enlazado.obj
+Cargador: LAD = 00001000, CP = 00001000, imagen en salidas/raiz_1000.hex
+---------- OK
+  Cargador de Python con LAD = 00001000: 890 palabras, CP = 00001000; la memoria es IGUAL a la imagen de Flex
+---------- pantalla del DJ-64
+[DJ-64] 890 palabras cargadas, CP inicial 00001000, instrucciones ejecutadas: 25602
+Raiz cuadrada por el metodo de Heron (De Euclides a Java, p. 26)
+x  = 125.000000000000
+  y0 = 10.000000000000
+  y1 = 11.250000000000
+  y2 = 11.180555555556
+  y3 = 11.180339889579
+  y4 = 11.180339887499
+  y5 = 11.180339887499
+raiz(x) = 11.180339887499   (5 iteraciones)
+
+########## 3b. El mismo programa cargado en LAD = 5000
+  Cargador de Python con LAD = 00005000: 890 palabras, CP = 00005000; la memoria es IGUAL a la imagen de Flex
+[DJ-64] 890 palabras cargadas, CP inicial 00005000, instrucciones ejecutadas: 25602
+---------- misma pantalla que con LAD = 1000: OK
+
+########## 3c. Enlazador-cargador: brun_mod.obj (LIMITE = 10000) + fpu.obj, LAD = 1000
+Enlazador: 2 modulo(s), 1004 palabras
+  MODULO         BASE       TAMANO   ARCHIVO
+  brun_mod       00000000   383      salidas/brun_mod.obj
+  fpu            0000017F   621      salidas/fpu.obj
+  13 simbolos globales, 321 palabras para reubicar al cargar
+  modulo enlazado en salidas/brun_enlazado.obj
+Cargador: LAD = 00001000, CP = 00001000, imagen en salidas/brun_1000.hex
+---------- OK
+  Cargador de Python con LAD = 00001000: 1004 palabras, CP = 00001000; la memoria es IGUAL a la imagen de Flex
+---------- pantalla del DJ-64
+[DJ-64] 1004 palabras cargadas, CP inicial 00001000, instrucciones ejecutadas: 483110
+Constante de Brun (suma de inversos de primos gemelos)
+N                       = 10000
+pares de gemelos <= N   = 205
+suma parcial B(N)       = 1.616893557432
+ln(N)                   = 9.210340371976
+B(N) + 4 C2 / ln(N)     = 1.903598191218
+
+########## 3d. Enlazador: referencias externas sin resolver (raiz_mod.obj solo)
+error: referencia externa no resuelta: 'imprimir_texto' (usada en salidas/raiz_mod.obj)
+error: referencia externa no resuelta: 'imprimir_texto' (usada en salidas/raiz_mod.obj)
+error: referencia externa no resuelta: 'fpu_imprimir' (usada en salidas/raiz_mod.obj)
+error: referencia externa no resuelta: 'nueva_linea' (usada en salidas/raiz_mod.obj)
+   ... (26 lineas de error en total)
+---------- OK (se detecto el error, codigo de salida 1)
+
+########## 3e. Enlazador: simbolo global definido dos veces (fpu.obj + fpu.obj)
+error: el simbolo global 'fpu_sumar' esta definido en dos modulos (salidas/fpu.obj)
+error: el simbolo global 'fpu_restar' esta definido en dos modulos (salidas/fpu.obj)
+error: el simbolo global 'fpu_mult' esta definido en dos modulos (salidas/fpu.obj)
+   ... (14 lineas de error en total)
+---------- OK (se detecto el error, codigo de salida 1)
+
+########## 3f. Enlazador: modulo objeto mal formado (pruebas/obj/malo.obj)
+error: pruebas/obj/malo.obj:4: registro mal formado
+error: pruebas/obj/malo.obj:5: direccion fuera del modulo
+error: pruebas/obj/malo.obj: falta el registro E (fin de modulo)
+error: pruebas/obj/malo.obj: el encabezado dice 3 palabras y hay 1 registros T
+4 error(es) al leer los modulos
+---------- OK (se detecto el error, codigo de salida 1)
+
+########## 4. Analizador lexico: heron.djl (preprocesado)
+---------- OK
+LINEA  COL  LEXEMA                 CATEGORIA          CODIGO
+-----  ---  ---------------------- ------------------ ------
+    6    1  float                  PALABRA_RESERVADA     102
+    6    7  abs_f                  IDENTIFICADOR         200
+    6   12  (                      DELIMITADOR          1101
+    6   13  float                  PALABRA_RESERVADA     102
+    6   19  x                      IDENTIFICADOR         200
+    6   20  )                      DELIMITADOR          1102
+    6   22  {                      DELIMITADOR          1105
+    7    5  if                     PALABRA_RESERVADA     108
+  ...
+RESUMEN
+  PALABRA_RESERVADA       18
+  IDENTIFICADOR           30
+  CONSTANTE_ENTERA         4
+  CONSTANTE_REAL           5
+  CONSTANTE_CARACTER       1
+  CONSTANTE_CADENA         2
+  OP_ARITMETICO            6
+  OP_RELACIONAL            3
+  OP_LOGICO                1
+  ASIGNACION               6
+  DELIMITADOR             47
+  TOTAL DE TOKENS        123
+  ERRORES LEXICOS          0
+
+########## 4. Analizador lexico: matrices.djl (preprocesado)
+---------- OK
+LINEA  COL  LEXEMA                 CATEGORIA          CODIGO
+-----  ---  ---------------------- ------------------ ------
+    4    1  int                    PALABRA_RESERVADA     101
+    4    5  a                      IDENTIFICADOR         200
+    4    6  [                      DELIMITADOR          1103
+    4    7  3                      CONSTANTE_ENTERA      300
+    4    8  ]                      DELIMITADOR          1104
+    4    9  [                      DELIMITADOR          1103
+    4   10  3                      CONSTANTE_ENTERA      300
+    4   11  ]                      DELIMITADOR          1104
+  ...
+RESUMEN
+  PALABRA_RESERVADA       17
+  IDENTIFICADOR           58
+  CONSTANTE_ENTERA        29
+  CONSTANTE_REAL           0
+  CONSTANTE_CARACTER       0
+  CONSTANTE_CADENA         0
+  OP_ARITMETICO           10
+  OP_RELACIONAL            6
+  OP_LOGICO                0
+  ASIGNACION              14
+  DELIMITADOR            108
+  TOTAL DE TOKENS        242
+  ERRORES LEXICOS          0
+
+########## 4. Analizador lexico: estudiantes.djl (preprocesado)
+---------- OK
+LINEA  COL  LEXEMA                 CATEGORIA          CODIGO
+-----  ---  ---------------------- ------------------ ------
+    4    1  const                  PALABRA_RESERVADA     107
+    4    7  float                  PALABRA_RESERVADA     102
+    4   13  APROBAR                IDENTIFICADOR         200
+    4   21  =                      ASIGNACION           1001
+    4   23  3.0                    CONSTANTE_REAL        400
+    4   26  ;                      DELIMITADOR          1107
+    6    1  struct                 PALABRA_RESERVADA     106
+    6    8  Estudiante             IDENTIFICADOR         200
+  ...
+RESUMEN
+  PALABRA_RESERVADA       27
+  IDENTIFICADOR           68
+  CONSTANTE_ENTERA        18
+  CONSTANTE_REAL           1
+  CONSTANTE_CARACTER       1
+  CONSTANTE_CADENA         1
+  OP_ARITMETICO            8
+  OP_RELACIONAL            6
+  OP_LOGICO                2
+  ASIGNACION              14
+  DELIMITADOR            112
+  TOTAL DE TOKENS        258
+  ERRORES LEXICOS          0
+
+########## 4d. Analizador lexico: programa con errores (pruebas/djl/errores.djl)
+---------- OK (se detecto el error, codigo de salida 1)
+    3    9  2valor                 ERROR                   0  <- numero mal formado (un identificador no puede empezar con digito)
+    4   15  3.                     ERROR                   0  <- real incompleto: faltan digitos despues del punto
+    5   15  1.5e                   ERROR                   0  <- real incompleto: faltan digitos en el exponente
+    6   14  'ab'                   ERROR                   0  <- constante caracter mal formada
+    7   11  "tab\q"                ERROR                   0  <- secuencia de escape no valida en la cadena
+    8   11  "sin cerrar);          ERROR                   0  <- cadena sin cerrar
+    9   11  &                      ERROR                   0  <- operador incompleto (use && o ||)
+    9   24  |                      ERROR                   0  <- operador incompleto (use && o ||)
+   10    9  este_identificador_es_ ERROR                   0  <- identificador de mas de 31 caracteres
+   11   18  99999999999999999999   ERROR                   0  <- constante entera fuera de rango (64 bits)
+   12   17  @                      ERROR                   0  <- caracter no valido
+   13    5  #define TARDE 1        ERROR                   0  <- directiva sin preprocesar (use el preprocesador)
+   16    1  /*                     ERROR                   0  <- comentario /* sin cerrar
+
+########## 5. SPL completo: raiz.asm (#include "fpu.asm") -> preprocesador -> ensamblador -> enlazador-cargador -> DJ-64
+preprocesador: 1 archivo(s) incluido(s), 0 macro(s) definida(s), 0 reemplazo(s), 0 error(es)
+raiz: 657 palabras de codigo, 233 de datos, 296 reubicables, 13 exportados, 0 referencias externas
+Enlazador: 1 modulo(s), 890 palabras
+  MODULO         BASE       TAMANO   ARCHIVO
+  raiz           00000000   890      salidas/raiz.obj
+  13 simbolos globales, 296 palabras para reubicar al cargar
+  modulo enlazado en salidas/raiz_solo.obj
+Cargador: LAD = 00001000, CP = 00001000, imagen en salidas/raiz_solo.hex
+[DJ-64] 890 palabras cargadas, CP inicial 00001000, instrucciones ejecutadas: 25602
+---------- OK
+---------- misma pantalla que con la FPU enlazada como modulo aparte (3a): OK
+
+== Pruebas que fallaron: 0

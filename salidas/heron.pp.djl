@@ -1,0 +1,30 @@
+// heron.djl - Raiz cuadrada por el metodo de Heron, escrita en DJL
+// matematicas.djl - biblioteca de DJL que se incluye con #include
+
+
+
+float abs_f(float x) {
+    if (x < 0.0) {
+        return -x;
+    }
+    return x;
+}
+
+/* y(i+1) = 1/2 * ( y(i) + x / y(i) ) hasta que deja de cambiar */
+float heron(float x, float y0) {
+    float y = y0;
+    float anterior;
+    int i = 0;
+    do {
+        anterior = y;
+        y = 0.5 * (y + x / y);
+        i = i + 1;
+    } while (abs_f(y - anterior) > 1e-12 && i < 50);
+    return y;
+}
+
+int main() {
+    float x = 125.0;
+    print("raiz(", x, ") = ", heron(x, 10.0), '\n');
+    return 0;
+}
